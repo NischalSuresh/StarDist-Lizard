@@ -1,4 +1,4 @@
-import torch
+import torchvision
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
 import numpy as np
@@ -96,6 +96,7 @@ class MyDataset(Dataset):
         if self.transforms:
             image = self.transforms(image)
             instance_map = self.transforms(instance_map)
+        image = torchvision.transforms.functional.to_tensor(image)
         object_probabilities = self.calculate_object_probabilities(instance_map)
         star_poly_dist = self.calculate_star_distances(instance_map)
         return image, object_probabilities, star_poly_dist
