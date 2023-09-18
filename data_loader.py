@@ -1,12 +1,9 @@
 import torch
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
-
 import numpy as np
 from scipy.spatial.distance import euclidean
 import skimage
-
-
 
 class MyDataset(Dataset):
     ''' - Takes the path of the image file and labels as constructor arguments \n
@@ -95,9 +92,10 @@ class MyDataset(Dataset):
     
     def __getitem__(self, idx):
         image = self.images[idx,:,:,:]
-        instance_map = self.instance_maps[idx,:,:,:]
+        instance_map = self.instance_maps[idx,:,:]
         if self.transforms:
             image = self.transforms(image)
             instance_map = self.transforms(instance_map)
-        
-        return image, instance_map
+        object_probabilities = self.calculate_object_probabilities(instance_map)
+        star_poly_dist = self.calculate_star_distances(instance_map)
+        return image, object_probabilities, star_poly_dist
