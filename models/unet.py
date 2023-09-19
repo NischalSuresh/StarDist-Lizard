@@ -36,7 +36,7 @@ class UNet(torch.nn.Module):
     def down(self, x):
         return torch.nn.functional.max_pool2d(x, kernel_size=2)
     
-    def __init__(self, in_channels, out_channels, batch_norm=False, upscale_mode="nearest"):
+    def __init__(self, in_channels, out_channels = 128, batch_norm=False, upscale_mode="nearest"):
         super().__init__()
         
         self.in_channels = in_channels
@@ -85,7 +85,7 @@ class PretrainedUNet(torch.nn.Module):
     def down(self, x):
         return torch.nn.functional.max_pool2d(x, kernel_size=2)
     
-    def __init__(self, in_channels, out_channels, batch_norm=False, upscale_mode="nearest"):
+    def __init__(self, in_channels, out_channels = 128, batch_norm=False, upscale_mode="nearest"):
         super().__init__()
         
         self.in_channels = in_channels
@@ -138,4 +138,20 @@ class PretrainedUNet(torch.nn.Module):
         out = self.out(dec1)
         
         return out
+    
+class output_maps(torch.nn.Module):
+    ''' - Takes number of o/p channels and n_rays as constructor arguments \n
+    - returns obj probability and star poly distance maps
+    '''
+    def __init__(self, out_channels = 128, n_rays = 8):
+        super().__init__()
+        self.out_channels = out_channels
+        self.n_rays = n_rays
+        self.conv1 = torch.nn.Conv2d(in_channels=self.out_channels, out_channels=1, kernel_size=1)
+        self.conv2 = torch.nn.Conv2d(in_channels=self.out_channels, out_channels=n_rays, kernel_size=1)
+
+    def forward(self, x):
+        out1 = self.conv1(x)
+        out2 = torch.sigmoid(self.conv2(x))
+        return out1, out2
     
