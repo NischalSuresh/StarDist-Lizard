@@ -58,7 +58,13 @@ class MyDataset(Dataset):
                         )
                         min_distance = np.min(distances_to_background)
                         # normalize to [0, 1]
-                        object_probabilities[i, j] = min_distance / distances_to_background.max()
+                        if(distances_to_background.max()==0):
+                            object_probabilities[i, j] = 0
+                            print("Warning : max distance is 0 (can be ignored)")
+                            print("min distance is: ", min_distance)
+                        else:
+                            object_probabilities[i, j] = min_distance / distances_to_background.max()
+                        
                         # calculate the distance from instace pixel to each ray point using np.linalg.norm
                         star_distances[i,j] = np.linalg.norm(ray_points - np.array([i, j]), axis=1)
                         # calc the angles with respect to the x-axis
