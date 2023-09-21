@@ -11,10 +11,11 @@ class MyDataset(Dataset):
     - getitem returns image, obj_prob and star_poly_dist
     - For definition of obj_prob and star_poly_dist refer paper'''
 
-    def __init__(self, images_path, labels_path, transforms = None):
+    def __init__(self, images_path, labels_path, n_rays = 32, transforms = None):
         self.images = np.load(images_path)
         self.instance_maps = np.load(labels_path)[:,:,:,0]
         self.transforms = transforms
+        self.n_rays = n_rays
     
     def __len__(self):
         return self.images.shape[0]
@@ -37,7 +38,7 @@ class MyDataset(Dataset):
         rotated_arr = np.concatenate((contour_init[index:], contour_init[:index]))
         return rotated_arr
     
-    def calculate_starGT(self,instance_segmentation_map, n_rays = 32):
+    def calculate_starGT(self,instance_segmentation_map, n_rays):
             """
             Calculate object prob for each pixel in the image.
             Args:
@@ -50,9 +51,9 @@ class MyDataset(Dataset):
             """
 
             # init the object probs with zeros
-            object_probabilities = np.zeros_like(instance_segmentation_map, dtype=float)
-            star_distances = np.zeros((instance_segmentation_map.shape[0],instance_segmentation_map.shape[1],n_rays), dtype=float)
-            angles = np.zeros_like(star_distances, dtype=float)
+            object_probabilities = np.zeros_like(instance_segmentation_map, dtype=np.float32)
+            star_distances = np.zeros((instance_segmentation_map.shape[0],instance_segmentation_map.shape[1],n_rays), dtype=np.float32)
+            angles = np.zeros_like(star_distances, dtype=np.float32)
             # iterate over each instance
             for inst in np.unique(instance_segmentation_map)[1:]:
                 instance_pixels = (instance_segmentation_map == inst)
@@ -70,10 +71,11 @@ class MyDataset(Dataset):
                             )
                             min_distance = np.min(distances_to_background)
                             # normalize to [0, 1]
-                            try:
-                                object_probabilities[i, j] = min_distance / distances_to_background.max()
-                            except:
-                                object_probabilities[i, j] = 0
+                            if distances_to_background.max() == 0:
+                                # handle division by 0
+                                object_probabilities[i, j] = 0.0  # Or any other appropriate value
+                            else:
+                                object_probabilities[i, j] = min_distance /  distances_to_background.max()
                             # calculate the distance from instace pixel to each ray point using np.linalg.norm
                             star_distances[i,j] = np.linalg.norm(contour_n - np.array([i, j]), axis=1)
                             # calc the angles with respect to the j-axis 
@@ -89,5 +91,5 @@ class MyDataset(Dataset):
             image = self.transforms(image)
             instance_map = self.transforms(instance_map)
         image = torchvision.transforms.functional.to_tensor(image)
-        object_probabilities, star_distances, angles = self.calculate_starGT(instance_map)
+        object_probabilities, star_distances, angles = self.calculate_starGT(instance_map, self.n_rays)
         return image, object_probabilities, star_distances, angles

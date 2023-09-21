@@ -143,7 +143,7 @@ class output_maps(torch.nn.Module):
     ''' - Takes number of o/p channels and n_rays as constructor arguments \n
     - returns obj probability and (star poly distance & star angles) maps
     '''
-    def __init__(self, out_channels = 128, n_rays = 8):
+    def __init__(self, out_channels = 128, n_rays = 32):
         super().__init__()
         self.out_channels = out_channels
         self.n_rays = n_rays
