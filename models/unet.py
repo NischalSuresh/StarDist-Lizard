@@ -141,14 +141,14 @@ class PretrainedUNet(torch.nn.Module):
     
 class output_maps(torch.nn.Module):
     ''' - Takes number of o/p channels and n_rays as constructor arguments \n
-    - returns obj probability and star poly distance maps
+    - returns obj probability and (star poly distance & star angles) maps
     '''
     def __init__(self, out_channels = 128, n_rays = 8):
         super().__init__()
         self.out_channels = out_channels
         self.n_rays = n_rays
         self.conv1 = torch.nn.Conv2d(in_channels=self.out_channels, out_channels=1, kernel_size=1)
-        self.conv2 = torch.nn.Conv2d(in_channels=self.out_channels, out_channels=n_rays, kernel_size=1)
+        self.conv2 = torch.nn.Conv2d(in_channels=self.out_channels, out_channels= 2 * n_rays, kernel_size=1)
 
     def forward(self, x):
         out1 = self.conv1(x)
