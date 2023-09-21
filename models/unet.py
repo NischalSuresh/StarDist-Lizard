@@ -36,7 +36,7 @@ class UNet(torch.nn.Module):
     def down(self, x):
         return torch.nn.functional.max_pool2d(x, kernel_size=2)
     
-    def __init__(self, in_channels, out_channels = 128, batch_norm=False, upscale_mode="nearest"):
+    def __init__(self, in_channels = 3, out_channels = 128, batch_norm=False, upscale_mode="nearest"):
         super().__init__()
         
         self.in_channels = in_channels
@@ -85,7 +85,7 @@ class PretrainedUNet(torch.nn.Module):
     def down(self, x):
         return torch.nn.functional.max_pool2d(x, kernel_size=2)
     
-    def __init__(self, in_channels, out_channels = 128, batch_norm=False, upscale_mode="nearest"):
+    def __init__(self, in_channels = 3, out_channels = 128, batch_norm=False, upscale_mode="nearest"):
         super().__init__()
         
         self.in_channels = in_channels

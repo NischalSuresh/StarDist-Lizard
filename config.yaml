@@ -3,8 +3,8 @@ images_path: ".//data//images.npy"
 toy_labels_path: ".//data//toy_labels.npy"
 toy_images_path: ".//data//toy_images.npy"
 
-n_rays: 32
+n_rays: 16
 
 batch_size: 16 # changed from 2 to 16
-lr: 0.0003
-num_epochs: 5
+lr: 0.001
+num_epochs: 3

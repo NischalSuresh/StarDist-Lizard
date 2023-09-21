@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-# import pdb
+import pdb
 
 def calculate_endpoint(start_point, length, angle_rad):
     x_start, y_start = start_point
@@ -39,7 +39,7 @@ def visualize(image, obj_prob, star_distances, star_angles):
     mid_points = np.argwhere(obj_prob > percentile_99_5)
     # filter points
     filtered_points = filter_points(mid_points, 5)
-    # pdb.set_trace()
+    pdb.set_trace()
     X = []
     Y = []
     for point in filtered_points:
