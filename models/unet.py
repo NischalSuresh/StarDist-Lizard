@@ -148,10 +148,12 @@ class output_maps(torch.nn.Module):
         self.out_channels = out_channels
         self.n_rays = n_rays
         self.conv1 = torch.nn.Conv2d(in_channels=self.out_channels, out_channels=1, kernel_size=1)
-        self.conv2 = torch.nn.Conv2d(in_channels=self.out_channels, out_channels= 2 * n_rays, kernel_size=1)
+        self.conv2 = torch.nn.Conv2d(in_channels=self.out_channels, out_channels= n_rays, kernel_size=1)
+        self.conv3 = torch.nn.Conv2d(in_channels=self.out_channels, out_channels= n_rays, kernel_size=1)
 
     def forward(self, x):
-        out1 = self.conv1(x)
-        out2 = torch.sigmoid(self.conv2(x))
-        return out1, out2
+        obj_prob = self.conv1(x)
+        star_dist = self.conv2(x)
+        star_angle = torch.sigmoid(self.conv3(x))
+        return obj_prob, star_dist, star_angle
     

@@ -39,7 +39,7 @@ def visualize(image, obj_prob, star_distances, star_angles):
     mid_points = np.argwhere(obj_prob > percentile_99_5)
     # filter points
     filtered_points = filter_points(mid_points, 5)
-    pdb.set_trace()
+    # pdb.set_trace()
     X = []
     Y = []
     for point in filtered_points:
